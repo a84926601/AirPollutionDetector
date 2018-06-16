@@ -1,28 +1,13 @@
 package com.yuntech.eb211.airpollutiondetector;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import android.widget.Toast;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,15 +20,23 @@ public class BackgroundRefresher extends Service {
     private Timer mTimer = null;
     private final List<Integer> notificationsFired  = new ArrayList<>();
     LocationProvider locationProvider;
+    DataProvider dataProvider;
 
+    public class LocalBinder extends Binder {
+        public BackgroundRefresher getService() {
+            return BackgroundRefresher.this;
+        }
+    }
+    private IBinder binder = new LocalBinder();
     @Override
     public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return binder;
     }
 
     @Override
     public void onCreate() {
         locationProvider=new LocationProvider(BackgroundRefresher.this);
+        dataProvider=new DataProvider(locationProvider);
         // Clear notifications fired array
         this.notificationsFired.clear();
         initializeTimer();
@@ -67,13 +60,9 @@ public class BackgroundRefresher extends Service {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(BackgroundRefresher.this, locationProvider.getLocation(), Toast.LENGTH_SHORT).show();
+                    dataProvider.getNearestStation();
                 }
             });
-        }
-
-        private void retrieveAirQuality(final int identifier) {
-
         }
     }
     private void initializeTimer(){

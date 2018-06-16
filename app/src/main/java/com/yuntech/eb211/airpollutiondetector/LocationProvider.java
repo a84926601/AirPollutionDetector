@@ -12,16 +12,16 @@ import java.io.IOException;
 import java.util.List;
 
 public class LocationProvider {
-    Context BackgroundRefresherContext;
+    private Context BackgroundRefresherContext;
     private static final String TAG  = "LocationProvider";
     private LocationManager mLocationManager = null;
-    Location mLastLocation;
+    private Location mLastLocation;
     LocationProvider(Context context){
         BackgroundRefresherContext=context;
         initializeLocationManager();
     }
     private class LocationListener implements android.location.LocationListener{
-        public LocationListener(String provider)
+        LocationListener(String provider)
         {
             Log.e(TAG, "LocationListener " + provider);
             mLastLocation = new Location(provider);
@@ -48,7 +48,7 @@ public class LocationProvider {
             Log.e(TAG, "onStatusChanged: " + provider);
         }
     }
-    LocationListener[] mLocationListeners = new LocationListener[] {
+    private LocationListener[] mLocationListeners = new LocationListener[] {
             new LocationListener(LocationManager.GPS_PROVIDER),
             new LocationListener(LocationManager.NETWORK_PROVIDER)
     };
@@ -60,9 +60,9 @@ public class LocationProvider {
     }
     public void destroyLocationManager(){
         if (mLocationManager != null) {
-            for (int i = 0; i < mLocationListeners.length; i++) {
+            for (LocationListener mLocationListener : mLocationListeners) {
                 try {
-                    mLocationManager.removeUpdates(mLocationListeners[i]);
+                    mLocationManager.removeUpdates(mLocationListener);
                 } catch (Exception ex) {
                     Log.i(TAG, "fail to remove location listners, ignore", ex);
                 }
@@ -80,7 +80,7 @@ public class LocationProvider {
                 Log.d(TAG, "network provider does not exist, " + ex.getMessage());
             }
         }
-        String Address="No data";
+        String Address=null;
         if(mLastLocation.getTime()!=0){
             try{
                 Address=getAddress(mLastLocation);
@@ -94,19 +94,14 @@ public class LocationProvider {
     private String getAddress(Location location) throws IOException {
         Geocoder geocoder = new Geocoder(BackgroundRefresherContext);
         boolean flag = geocoder.isPresent();
-        Log.e(TAG, "the falg is " + flag);
+        Log.e(TAG, "the flag is " + flag);
         try {
             //根据经纬度获取地理位置信息
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
             if (addresses != null && addresses.size() > 0) {
                 Address address = addresses.get(0);
-                String addressText = String.format("%s-%s%s%s%s",
-                        address.getCountryName(), //國家
-                        address.getAdminArea(), //城市
-                        address.getLocality(), //區
-                        address.getThoroughfare(), //路
-                        address.getSubThoroughfare() //巷號
-                );
+                String addressText = address.getAddressLine(0);
+                addressText=address.getAdminArea()!=null?address.getAdminArea():address.getSubAdminArea();
                 return addressText;
             }
         }catch (IOException e) {
@@ -115,5 +110,10 @@ public class LocationProvider {
             e.printStackTrace();
         }
         return null;
+    }
+    public float DistanceBetween(double Latitude,double Longitude){
+        float results[]=new float[1];
+        Location.distanceBetween(mLastLocation.getLatitude(), mLastLocation.getLongitude(),Latitude,Longitude,results);
+        return results[0];
     }
 }
