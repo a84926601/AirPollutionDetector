@@ -1,5 +1,6 @@
 package com.yuntech.eb211.airpollutiondetector;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -16,6 +17,7 @@ public class LocationProvider {
     private static final String TAG  = "LocationProvider";
     private LocationManager mLocationManager = null;
     private Location mLastLocation;
+    String AdminArea,Locality;
     LocationProvider(Context context){
         BackgroundRefresherContext=context;
         initializeLocationManager();
@@ -69,16 +71,45 @@ public class LocationProvider {
             }
         }
     }
-    public String getLocation() {
-        for (int i = mLocationListeners.length - 1; i >= 0; i--) {   //順序決定精準度
-            try {
-                mLocationManager.requestSingleUpdate(
-                        LocationManager.NETWORK_PROVIDER, mLocationListeners[i], null);
-            } catch (java.lang.SecurityException ex) {
-                Log.i(TAG, "fail to request location update, ignore", ex);
-            } catch (IllegalArgumentException ex) {
-                Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+    @SuppressLint("MissingPermission")
+    String getLocation() {
+        Location bestResult = null;
+        float bestAccuracy = Float.MAX_VALUE;
+        long bestTime = Long.MIN_VALUE;
+        List<String> matchingProviders = mLocationManager.getAllProviders();
+        for (String provider: matchingProviders) {
+            Location location = mLocationManager.getLastKnownLocation(provider);
+            if (location != null) {
+                float accuracy = location.getAccuracy();
+                long time = location.getTime();
+
+                if (accuracy < bestAccuracy) {
+                    bestResult = location;
+                    bestAccuracy = accuracy;
+                    bestTime = time;
+                }
+                else if (bestAccuracy == Float.MAX_VALUE && time > bestTime) {
+                    bestResult = location;
+                    bestTime = time;
+                }
             }
+        }
+        mLastLocation=bestResult;
+        try {
+            mLocationManager.requestSingleUpdate(
+                    LocationManager.GPS_PROVIDER, mLocationListeners[0], null);
+        } catch (java.lang.SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+        }
+        try {
+            mLocationManager.requestSingleUpdate(
+                    LocationManager.NETWORK_PROVIDER, mLocationListeners[1], null);
+        } catch (java.lang.SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
         }
         String Address=null;
         if(mLastLocation.getTime()!=0){
@@ -100,9 +131,9 @@ public class LocationProvider {
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
             if (addresses != null && addresses.size() > 0) {
                 Address address = addresses.get(0);
-                String addressText = address.getAddressLine(0);
-                addressText=address.getAdminArea()!=null?address.getAdminArea():address.getSubAdminArea();
-                return addressText;
+                Locality=address.getLocality()!=null?address.getLocality():address.getSubLocality();
+                AdminArea=address.getAdminArea()!=null?address.getAdminArea():address.getSubAdminArea();
+                return AdminArea;
             }
         }catch (IOException e) {
             // TODO Auto-generated catch block

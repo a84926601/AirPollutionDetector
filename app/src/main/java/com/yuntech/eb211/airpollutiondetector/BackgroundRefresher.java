@@ -15,7 +15,7 @@ import java.util.TimerTask;
 
 public class BackgroundRefresher extends Service {
     private static final String TAG     = "BackgroundRefresher";
-    private static final int delay      = 1800; // Delay between each search query in ms (15 min here)
+    private static final int delay      = 180000; // Delay between each search query in ms (15 min here)
     private final Handler mHandler      = new Handler();
     private Timer mTimer = null;
     private final List<Integer> notificationsFired  = new ArrayList<>();
@@ -41,7 +41,6 @@ public class BackgroundRefresher extends Service {
         this.notificationsFired.clear();
         initializeTimer();
     }
-
     /**
      * Service destroyed
      */
@@ -60,7 +59,7 @@ public class BackgroundRefresher extends Service {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    dataProvider.getNearestStation();
+                    dataProvider.getNearestStation(null);
                 }
             });
         }

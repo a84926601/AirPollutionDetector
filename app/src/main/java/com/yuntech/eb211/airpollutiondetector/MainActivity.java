@@ -16,7 +16,9 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
     private static final String TAG= "AirPollutionDetector";
     private static final int REQUEST_CODE_PERMISSIONS_LOCATION = 1;
-    TextView mTextView;
+    LocationProvider locationProvider;
+    DataProvider dataProvider;
+    TextView locationview,cityview,timeview,AqiText,status,Pm25Text,O3Text;
     //授權處理
     @Override
     public void onPermissionsGranted(int requestCode, List<String> list) {
@@ -45,7 +47,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mTextView = (TextView) findViewById(R.id.TextView1);
+        locationProvider = new LocationProvider(this);
+        dataProvider = new DataProvider(locationProvider);
+        locationview = findViewById(R.id.locationview);
+        cityview = findViewById(R.id.cityview);
+        timeview = findViewById(R.id.timeview);
+        AqiText = findViewById(R.id.AqiText);
+        status = findViewById(R.id.status);
+        Pm25Text= findViewById(R.id.Pm25Text);
+        O3Text = findViewById(R.id.O3Text);
         location_requiresPermissions();
     }
 
@@ -57,18 +67,28 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             public void run() {
                 startService(myIntent);
             }
-        }, 8000);
+        }, 0);
     }
-        @AfterPermissionGranted(REQUEST_CODE_PERMISSIONS_LOCATION)
-        private void location_requiresPermissions() {
-            String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-            if (EasyPermissions.hasPermissions(this, perms)) {
-                setupBackgroundService();
-            } else {
-                EasyPermissions.requestPermissions(this,
-                        "未允許「" + getString(R.string.app_name) + "」取得裝置位置權限，將使「" + getString(R.string.app_name) + "」無法正常運作，是否重新設定權限？",
-                        REQUEST_CODE_PERMISSIONS_LOCATION,
-                        perms);
-            }
+    @AfterPermissionGranted(REQUEST_CODE_PERMISSIONS_LOCATION)
+    private void location_requiresPermissions() {
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            dataProvider.getNearestStation(this);
+            setupBackgroundService();
+        } else {
+            EasyPermissions.requestPermissions(this,
+                    "未允許「" + getString(R.string.app_name) + "」取得裝置位置權限，將使「" + getString(R.string.app_name) + "」無法正常運作，是否重新設定權限？",
+                    REQUEST_CODE_PERMISSIONS_LOCATION,
+                    perms);
         }
+    }
+    public void showAQ(){
+        locationview.setText(locationProvider.AdminArea);
+        cityview.setText(locationProvider.Locality);
+        timeview.setText(dataProvider.PublishTime);
+        AqiText.setText(String.valueOf(dataProvider.AQI));
+        status.setText(String.valueOf(dataProvider.Status));
+        Pm25Text.setText(String.valueOf(dataProvider.PM25));
+        O3Text.setText(String.valueOf(dataProvider.O3));
+    }
 }

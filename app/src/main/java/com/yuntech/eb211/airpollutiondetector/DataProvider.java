@@ -1,5 +1,8 @@
 package com.yuntech.eb211.airpollutiondetector;
 
+import android.os.Handler;
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,22 +23,22 @@ public class DataProvider {
     private OkHttpClient client = new HttpsUtils().getTrustAllClient();
     //Station結構
     int AQI=0;
-    String SiteName,Status="",PublishTime;
+    String SiteName,Status,PublishTime;
     float PM25=0,NO2=0,O3=0;
     //建構子
     DataProvider(LocationProvider locationProvider){
         CurrentLocationProvider=locationProvider;
     }
-    public void getNearestStation(){
-        String location=null;
+    public void getNearestStation(MainActivity mainActivity){
+        String location;
         location=CurrentLocationProvider.getLocation();
         if(location==null){
             location=CurrentLocationProvider.getLocation();
         }
-        AQdata(location);
-
+        AQdata(mainActivity,location);
     }
-    private void AQdata(String location){
+    private void AQdata(final MainActivity mainActivity, String location){
+        final Handler handler=new Handler();
         final ExecutorService service = Executors.newSingleThreadExecutor();
         final String county=location;
         service.submit(new Runnable() {
@@ -50,12 +53,14 @@ public class DataProvider {
                     try{
                         //建立一個JSONObject並帶入JSON格式文字，getString(String key)取出欄位的數值
                         JSONArray array = new JSONObject(resStr).getJSONObject("result").getJSONArray("records");
-                        float dis=Float.MAX_VALUE;
+                        float disMin=Float.MAX_VALUE;
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject jsonStation = array.getJSONObject(i);
                             float Latitude = Float.valueOf(jsonStation.getString("Latitude"));
                             float Longitude = Float.valueOf(jsonStation.getString("Longitude"));
-                            if(dis>CurrentLocationProvider.DistanceBetween(Latitude,Longitude)){
+                            float CurrentDistence=CurrentLocationProvider.DistanceBetween(Latitude,Longitude);
+                            if(disMin>CurrentDistence){
+                                disMin=CurrentDistence;
                                 SiteName = jsonStation.getString("SiteName");
                                 AQI=Integer.valueOf(jsonStation.getString("AQI"));
                                 Status = jsonStation.getString("Status");
@@ -65,14 +70,30 @@ public class DataProvider {
                                 PublishTime = jsonStation.getString("PublishTime");
                             }
                         }
+                        Log.e("Data","Finish Download Data");
                     }
                     catch(JSONException e) {
                         e.printStackTrace();
+                        Log.e("Data","DataError");
                     }
 
                 } catch (IOException e) {
+                    Log.e("Data","TimeOut");
                     e.printStackTrace();
                 }
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(mainActivity!=null){
+                            if(AQI!=0){
+                                Log.e("Data","Call ShowAQ");
+                                mainActivity.showAQ();
+                            }
+                            else
+                                Log.e("Data","AQI=0");
+                        }
+                    }
+                });
             }
         });
     }
