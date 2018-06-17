@@ -1,6 +1,10 @@
 package com.yuntech.eb211.airpollutiondetector;
 
 import android.Manifest;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -15,7 +19,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
     private static final String TAG= "AirPollutionDetector";
-    private static final int REQUEST_CODE_PERMISSIONS_LOCATION = 1;
+    private static final int REQUEST_CODE_PERMISSIONS_LOCATION = 1,jobId=12;
     LocationProvider locationProvider;
     DataProvider dataProvider;
     TextView locationview,cityview,timeview,AqiText,status,Pm25Text,O3Text;
@@ -60,12 +64,30 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     private void setupBackgroundService() {
-        Intent myIntent = new Intent(MainActivity.this, BackgroundRefresher.class);
-        startService(myIntent);
+        JobScheduler mJobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        mJobScheduler.cancelAll();
+        boolean hasBeenScheduled = false ;
+        for ( JobInfo jobInfo : mJobScheduler.getAllPendingJobs() ) {
+            if ( jobInfo.getId() == jobId ) {
+                hasBeenScheduled = true ;
+                Log.e(TAG,jobInfo.toString()+" wasScheduled");
+                break ;
+            }
+        }
+        if(!hasBeenScheduled){
+            JobInfo.Builder builder = new JobInfo.Builder(jobId,
+                    new ComponentName(getPackageName(), BackgroundRefresher.class.getName()));
+            builder.setPersisted(true)
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .setBackoffCriteria(0,JobInfo.BACKOFF_POLICY_LINEAR);
+
+            mJobScheduler.schedule(builder.build());
+            Log.e(TAG,"NowHasBeenScheduled");
+        }
     }
     @AfterPermissionGranted(REQUEST_CODE_PERMISSIONS_LOCATION)
     private void location_requiresPermissions() {
-        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+        String[] perms = {Manifest.permission.ACCESS_COARSE_LOCATION};  //Manifest.permission.ACCESS_FINE_LOCATION
         if (EasyPermissions.hasPermissions(this, perms)) {
             dataProvider.getNearestStation(this,null);
             setupBackgroundService();

@@ -5,102 +5,65 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.job.JobInfo;
+import android.app.job.JobParameters;
+import android.app.job.JobScheduler;
+import android.app.job.JobService;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static android.R.attr.max;
 
 //使用時要將Service 注册到 AndroidManifest.xml Application 里面
 
-public class BackgroundRefresher extends Service {
+public class BackgroundRefresher extends JobService {
+    private static final int jobId=12,delay=2;
     private static final String TAG     = "BackgroundRefresher";
-    private static final int delay      = 60000; // Delay between each search query in ms (15 min here)
-    private final Handler mHandler      = new Handler();
-    private Timer mTimer = null,heartbeat=null;
-    private final List<Integer> notificationsFired  = new ArrayList<>();
     LocationProvider locationProvider;
     DataProvider dataProvider;
 
     @Override
-    public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    @Override
-    public void onCreate() {
+    public boolean onStartJob(JobParameters params) {
         locationProvider=new LocationProvider(BackgroundRefresher.this);
         dataProvider=new DataProvider(locationProvider);
         // Clear notifications fired array
-        this.notificationsFired.clear();
-        initializeTimer();
-    }
-    public int onStartCommand(Intent intent, int flags, int startId)
-    {
-        //這裡實作你想做的工作
-        return Service.START_STICKY;
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                dataProvider.getNearestStation(null,BackgroundRefresher.this);
+            }
+        });
+        ScheduleNextJob();
+        jobFinished(params, false);
+        return true;
     }
     /**
      * Service destroyed
      */
     @Override
-    public void onDestroy() {
+    public boolean onStopJob(JobParameters params) {
         super.onDestroy();
-        mTimer.cancel();
         locationProvider.destroyLocationManager();
         Log.e(TAG,"Service Stopped");
-        Toast.makeText(this, "服務已停止", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "服務已停止", Toast.LENGTH_SHORT).show();
+        return false;
     }
+    private void ScheduleNextJob(){
+        JobScheduler mJobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        JobInfo.Builder builder = new JobInfo.Builder(jobId,
+                new ComponentName(getPackageName(), BackgroundRefresher.class.getName()));
+        builder.setPersisted(true)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setMinimumLatency(delay*60000); //週期執行
 
-    private class TimeDisplay extends TimerTask {
-        @Override
-        public void run() {
-            // Fetching data...
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    dataProvider.getNearestStation(null,BackgroundRefresher.this);
-                    startService(new Intent(BackgroundRefresher.this,BackgroundRefresher.class));
-                }
-            });
-        }
-    }
-    private class Heartbeat extends TimerTask {
-        @Override
-        public void run() {
-            // Fetching data...
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    startService(new Intent(BackgroundRefresher.this,BackgroundRefresher.class));
-                }
-            });
-        }
-    }
-    private void initializeTimer(){
-        if (mTimer != null)
-            mTimer.cancel();
-        else
-            mTimer = new Timer();
-        // Launch refresher task service timer
-        mTimer.scheduleAtFixedRate(new TimeDisplay(), 1000, delay);
-        //保持Service不停止
-        if (heartbeat != null)
-            heartbeat.cancel();
-        else
-            heartbeat = new Timer();
-        // Launch refresher task service timer
-        heartbeat.scheduleAtFixedRate(new Heartbeat(), 1000, 3000);
+        mJobScheduler.schedule(builder.build());
+        Log.e(TAG,"NowHasBeenScheduled");
     }
     public void sendAlertPushNotification(String city, int threshold) {
         NotificationManager mNotificationManager =
