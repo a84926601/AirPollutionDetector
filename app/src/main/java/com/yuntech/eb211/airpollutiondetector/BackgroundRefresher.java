@@ -12,7 +12,9 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -27,18 +29,21 @@ public class BackgroundRefresher extends JobService {
     private static final String TAG     = "BackgroundRefresher";
     LocationProvider locationProvider;
     DataProvider dataProvider;
+    AudioManager audioManager;
 
     @Override
     public boolean onStartJob(JobParameters params) {
+        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         locationProvider=new LocationProvider(BackgroundRefresher.this);
         dataProvider=new DataProvider(locationProvider);
         // Clear notifications fired array
-        new Handler().post(new Runnable() {
+        /*new Handler().post(new Runnable() {
             @Override
             public void run() {
                 dataProvider.getNearestStation(null,BackgroundRefresher.this);
             }
-        });
+        });*/
+        sendAlertPushNotification("a",1);
         ScheduleNextJob();
         jobFinished(params, false);
         return true;
@@ -66,13 +71,15 @@ public class BackgroundRefresher extends JobService {
         Log.e(TAG,"NowHasBeenScheduled");
     }
     public void sendAlertPushNotification(String city, int threshold) {
+        //int OriginRingerMode=changeToCustomVolume();
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("default",
-                    "YOUR_CHANNEL_NAME",
+                    "空氣汙染警報",
                     NotificationManager.IMPORTANCE_DEFAULT);
             channel.setDescription("YOUR_NOTIFICATION_CHANNEL_DISCRIPTION");
+            channel.setVibrationPattern(new long[]{0});
             mNotificationManager.createNotificationChannel(channel);
         }
         NotificationCompat.Builder b = new NotificationCompat.Builder(BackgroundRefresher.this,"default");
@@ -83,15 +90,26 @@ public class BackgroundRefresher extends JobService {
         PendingIntent contentIntent = PendingIntent.getActivity(BackgroundRefresher.this, 0, notificationIntent, 0);
 
         b.setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("空氣汙染警報")
-                .setContentText(city+"空氣品質不良 AQI"+threshold)
-                .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
-                .setContentIntent(contentIntent);
+            .setWhen(System.currentTimeMillis())
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle("空氣汙染警報")
+            .setContentText(city+"空氣品質不良 AQI"+threshold)
+            //.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
+            .setVibrate(new long[]{500})
+            .setOnlyAlertOnce(true)
+            .setContentIntent(contentIntent);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, b.build());
+        //changeToOriginVolume(OriginRingerMode);
+    }
+    public int changeToCustomVolume(){
+        int ringerMode=audioManager.getRingerMode();
+        audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+        return ringerMode;
+    }
+    public void changeToOriginVolume(int ringerMode){
+        Log.e(TAG,String.valueOf(ringerMode));
+        audioManager.setRingerMode(2);
     }
 }

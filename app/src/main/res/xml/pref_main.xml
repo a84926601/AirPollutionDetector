@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/pref_header_general">
+        <ListPreference
+            android:defaultValue="3"
+            android:dialogTitle="上傳品質"
+            android:entries="@array/pref_upload_quality_entries"
+            android:entryValues="@array/pref_upload_quality_values"
+            android:key="key_upload_quality"
+            android:summary="Specify video quality for uploads"
+            android:title="Upload Quality" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_air_pollution_notify">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/key_enable_notify"
+            android:summary="@string/summary_enable_notify"
+            android:title="@string/title_enable_notify" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/key_enable_vibrate"
+            android:summary="@string/summary_enable_vibrate"
+            android:title="@string/title_enable_vibrate" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/key_enable_sound"
+            android:summary="@string/summary_enable_sound"
+            android:title="@string/title_enable_sound" />
+    </PreferenceCategory>
+</PreferenceScreen>
