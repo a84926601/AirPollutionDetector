@@ -88,16 +88,41 @@ public class DataProvider {
                         if(AQI!=0){
                             if(mainActivity!=null) {
                                 Log.e("Data", "Call ShowAQ");
-                                String ColorString="";
-                                if(AQI<51)ColorString=mainActivity.getString(R.string.AQI_excellent_color);
-                                else if(AQI<101)ColorString=mainActivity.getString(R.string.AQI_good_color);
-                                else if(AQI<151)ColorString=mainActivity.getString(R.string.AQI_lightly_polluted_color);
-                                else if(AQI<201)ColorString=mainActivity.getString(R.string.AQI_moderately_polluted_color);
-                                else if(AQI<301)ColorString=mainActivity.getString(R.string.AQI_heavily_polluted_color);
-                                else ColorString=mainActivity.getString(R.string.AQI_severely_polluted_color);
+                                int img=0;
+                                String ColorString="",suggest="";
+                                if(AQI<51){
+                                    img=R.drawable.happy;
+                                    ColorString=mainActivity.getString(R.string.AQI_excellent_color);
+                                    suggest=mainActivity.getString(R.string.AQI_excellent_suggest);
+                                }
+                                else if(AQI<101){
+                                    img=R.drawable.smiling;
+                                    ColorString=mainActivity.getString(R.string.AQI_good_color);
+                                    suggest=mainActivity.getString(R.string.AQI_good_suggest);
+                                }
+                                else if(AQI<151){
+                                    img=R.drawable.sceptic;
+                                    ColorString=mainActivity.getString(R.string.AQI_lightly_polluted_color);
+                                    suggest=mainActivity.getString(R.string.AQI_lightly_polluted_suggest);
+                                }
+                                else if(AQI<201){
+                                    img=R.drawable.sad;
+                                    ColorString=mainActivity.getString(R.string.AQI_moderately_polluted_color);
+                                    suggest=mainActivity.getString(R.string.AQI_moderately_polluted_suggest);
+                                }
+                                else if(AQI<301){
+                                    img=R.drawable.face;
+                                    ColorString=mainActivity.getString(R.string.AQI_heavily_polluted_color);
+                                    suggest=mainActivity.getString(R.string.AQI_heavily_polluted_suggest);
+                                }
+                                else {
+                                    img=R.drawable.dead;
+                                    ColorString=mainActivity.getString(R.string.AQI_severely_polluted_color);
+                                    suggest=mainActivity.getString(R.string.AQI_severely_polluted_suggest);
+                                }
 
                                 mainActivity.drawData(AQI,ColorString);
-                                mainActivity.showAQ();
+                                mainActivity.showAQ(img,suggest);
                             }
                             else if(backgroundRefresher!=null) {
                                 backgroundRefresher.sendAlertPushNotification(CurrentLocationProvider.AdminArea,AQI);

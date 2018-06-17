@@ -10,6 +10,13 @@
     <string name="AQI_moderately_polluted_color">#ffff0000</string>
     <string name="AQI_heavily_polluted_color">#ff8f3f97</string>
     <string name="AQI_severely_polluted_color">#ff7e0023</string>
+
+    <string name="AQI_excellent_suggest">空氣品質為良好，污染程度低或無污染。</string>
+    <string name="AQI_good_suggest">空氣品質普通；但對非常少數之極敏感族群產生輕微影響。</string>
+    <string name="AQI_lightly_polluted_suggest">空氣污染物可能會對敏感族群的健康造成影響，但是對一般大眾的影響不明顯。</string>
+    <string name="AQI_moderately_polluted_suggest">對所有人的健康開始產生影響，對於敏感族群可能產生較嚴重的健康影響。</string>
+    <string name="AQI_heavily_polluted_suggest">健康警報：所有人都可能產生較嚴重的健康影響。</string>
+    <string name="AQI_severely_polluted_suggest">健康威脅達到緊急，所有人都可能受到影響。</string>
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->

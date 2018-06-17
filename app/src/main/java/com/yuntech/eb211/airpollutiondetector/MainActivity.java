@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +42,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     LocationProvider locationProvider;
     DataProvider dataProvider;
     DecoView arcView;
-    TextView locationview,cityview,timeview,AqiText,status,Pm25Text,O3Text;
+    TextView suggestion,locationview,cityview,timeview,AqiText,status,Pm25Text,O3Text;
+    ImageView healthMeter;
     Button setting;
     //授權處理
     @Override
@@ -83,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         status = findViewById(R.id.status);
         Pm25Text= findViewById(R.id.Pm25Text);
         O3Text = findViewById(R.id.O3Text);
+        healthMeter=findViewById(R.id.healthMeter);
+        suggestion = findViewById(R.id.suggestion);
         location_requiresPermissions();
         drawBaseCircle();
     }
@@ -186,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     perms);
         }
     }
-    public void showAQ(){
+    public void showAQ(int img,String suggest){
         locationview.setText(locationProvider.AdminArea);
         cityview.setText(locationProvider.Locality);
         timeview.setText(dataProvider.PublishTime);
@@ -194,5 +198,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         status.setText(String.valueOf(dataProvider.Status));
         Pm25Text.setText(String.valueOf(dataProvider.PM25));
         O3Text.setText(String.valueOf(dataProvider.O3));
+        healthMeter.setBackgroundResource(img);
+        suggestion.setText(suggest);
     }
 }
