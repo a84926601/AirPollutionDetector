@@ -1,196 +1,207 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/p1new"
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/button"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="21dp"
-        android:layout_marginTop="13dp"
-        android:background="@drawable/p4"
-        android:gravity="center"
-        android:text="說明"
-        android:textStyle="bold"/>
-
-    <Button
         android:id="@+id/button2"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/button"
-        android:layout_marginStart="21dp"
-        android:background="@drawable/p5"/>
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        android:text="空行者        " />
-
-    <TextView
-        android:id="@+id/LastUpdateText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/button2"
-        android:layout_below="@+id/button2"
-        android:layout_marginTop="16dp"
-        android:text="上次更新時間"
-        android:textSize="20sp" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="100dp"
-        android:layout_height="150dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/p1" />
-
-    <TextView
-        android:id="@+id/timeview"
-        android:layout_width="192dp"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/button"
-        android:layout_alignTop="@+id/LastUpdateText"
-        android:layout_marginStart="-132dp"
-        android:text="01:55"
-        android:textAlignment="textEnd"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/locationview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/LastUpdateText"
-        android:layout_below="@+id/LastUpdateText"
-        android:textSize="20sp"
-        android:layout_marginTop="14dp"
-        android:text="雲林縣" />
-
-    <TextView
-        android:id="@+id/cityview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/locationview"
-        android:layout_marginStart="106dp"
-        android:text="斗六"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/weatherview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/textView"
-        android:layout_alignTop="@+id/locationview"
-        android:text="晴天"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/temperatureview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/button"
-        android:layout_alignTop="@+id/locationview"
-        android:text="28度"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/textView20"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/imageView"
-        android:layout_alignEnd="@+id/LastUpdateText"
-        android:text="小建議：" />
-
-    <TextView
-        android:id="@+id/textView21"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textView20"
-        android:layout_below="@+id/textView20"
-        android:layout_marginTop="15dp"
-        android:text="TextView"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/cityview"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="43dp"
-        android:textSize="20sp"
-        android:text="AQI" />
-
-    <TextView
-        android:id="@+id/AqiText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@+id/textView2"
-        android:text="0"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/Pm25Text"
-        android:layout_alignBottom="@+id/Pm25Text"
-        android:layout_alignStart="@+id/locationview"
-        android:textSize="20sp"
-        android:text="PM2.5" />
-
-    <TextView
-        android:id="@+id/Pm25Text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/textView20"
-        android:layout_alignStart="@+id/cityview"
-        android:layout_marginBottom="11dp"
-        android:text="0"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/Pm25Text"
-        android:layout_alignBottom="@+id/Pm25Text"
-        android:layout_toLeftOf="@+id/imageView"
-        android:layout_toStartOf="@+id/imageView"
-        android:textSize="20sp"
-        android:text="O3" />
-
-    <TextView
-        android:id="@+id/O3Text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textView6"
-        android:layout_alignBottom="@+id/textView6"
-        android:layout_alignStart="@+id/temperatureview"
-        android:text="0"
-        android:textSize="20sp" />
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/setup"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:layout_toEndOf="@+id/textView2"
         android:text="普通"
-        android:textSize="20sp" />
+        android:textSize="36sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView21"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timeview"
+        app:layout_constraintVertical_bias="0.65" />
 
-</RelativeLayout>
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/button2"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/happy1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/timeview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="8dp"
+        android:text="2018-06-01 12:02"
+        android:textAlignment="viewEnd"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/locationview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/textView2"
+        android:layout_alignTop="@+id/button2"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="20dp"
+        android:text="雲林縣"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/button2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/cityview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/locationview"
+        android:layout_alignBottom="@+id/locationview"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@+id/locationview"
+        android:text="斗六市"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/locationview"
+        app:layout_constraintTop_toTopOf="@+id/locationview" />
+
+    <TextView
+        android:id="@+id/textView21"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/timeview"
+        android:layout_alignTop="@+id/imageView"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="對所有人的健康開始產生影響，對於敏感族群可能產生較嚴重的健康影響。"
+        android:textColor="@android:color/background_light"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/AqiText"
+        android:layout_alignBottom="@+id/AqiText"
+        android:layout_alignStart="@+id/textView21"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="40dp"
+        android:text="AQI"
+        android:textSize="36sp"
+        app:layout_constraintBottom_toTopOf="@+id/status"
+        app:layout_constraintEnd_toEndOf="@+id/status" />
+
+    <TextView
+        android:id="@+id/AqiText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/cityview"
+        android:layout_below="@+id/button2"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:text="23"
+        android:textSize="36sp"
+        app:layout_constraintBottom_toTopOf="@+id/status"
+        app:layout_constraintStart_toEndOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/imageView"
+        android:layout_below="@+id/textView2"
+        android:layout_marginBottom="64dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="PM2.5"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView2"
+        app:layout_constraintEnd_toStartOf="@+id/textView2"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/Pm25Text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView4"
+        android:layout_below="@+id/textView4"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="20"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/textView4"
+        app:layout_constraintStart_toStartOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView4"
+        android:layout_alignBottom="@+id/textView4"
+        android:layout_alignEnd="@+id/textView21"
+        android:layout_marginBottom="64dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="O3"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/AqiText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/AqiText" />
+
+    <TextView
+        android:id="@+id/O3Text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/Pm25Text"
+        android:layout_alignBottom="@+id/Pm25Text"
+        android:layout_alignEnd="@+id/textView6"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="23"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/textView6"
+        app:layout_constraintStart_toStartOf="@+id/textView6"
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="上次更新"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/locationview"
+        app:layout_constraintTop_toBottomOf="@+id/locationview" />
+
+</android.support.constraint.ConstraintLayout>

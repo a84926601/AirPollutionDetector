@@ -1,5 +1,6 @@
 package com.yuntech.eb211.airpollutiondetector;
 
+import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
@@ -29,15 +30,15 @@ public class DataProvider {
     DataProvider(LocationProvider locationProvider){
         CurrentLocationProvider=locationProvider;
     }
-    public void getNearestStation(MainActivity mainActivity){
+    public void getNearestStation(MainActivity mainActivity,BackgroundRefresher backgroundRefresher){
         String location;
         location=CurrentLocationProvider.getLocation();
         if(location==null){
             location=CurrentLocationProvider.getLocation();
         }
-        AQdata(mainActivity,location);
+        AQdata(mainActivity,backgroundRefresher,location);
     }
-    private void AQdata(final MainActivity mainActivity, String location){
+    private void AQdata(final MainActivity mainActivity,final BackgroundRefresher backgroundRefresher, String location){
         final Handler handler=new Handler();
         final ExecutorService service = Executors.newSingleThreadExecutor();
         final String county=location;
@@ -84,14 +85,17 @@ public class DataProvider {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if(mainActivity!=null){
-                            if(AQI!=0){
-                                Log.e("Data","Call ShowAQ");
+                        if(AQI!=0){
+                            if(mainActivity!=null) {
+                                Log.e("Data", "Call ShowAQ");
                                 mainActivity.showAQ();
                             }
-                            else
-                                Log.e("Data","AQI=0");
+                            else if(backgroundRefresher!=null) {
+                                backgroundRefresher.sendAlertPushNotification(CurrentLocationProvider.AdminArea,AQI);
+                                Log.e("Data", "Call sendAlertPushNotification");
+                            }
                         }
+                        else Log.e("Data","AQI=0");
                     }
                 });
             }

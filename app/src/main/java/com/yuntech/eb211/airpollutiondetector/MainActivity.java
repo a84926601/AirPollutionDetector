@@ -60,20 +60,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     private void setupBackgroundService() {
-        final Intent myIntent = new Intent(MainActivity.this, BackgroundRefresher.class);
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startService(myIntent);
-            }
-        }, 0);
+        Intent myIntent = new Intent(MainActivity.this, BackgroundRefresher.class);
+        startService(myIntent);
     }
     @AfterPermissionGranted(REQUEST_CODE_PERMISSIONS_LOCATION)
     private void location_requiresPermissions() {
         String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
         if (EasyPermissions.hasPermissions(this, perms)) {
-            dataProvider.getNearestStation(this);
+            dataProvider.getNearestStation(this,null);
             setupBackgroundService();
         } else {
             EasyPermissions.requestPermissions(this,
