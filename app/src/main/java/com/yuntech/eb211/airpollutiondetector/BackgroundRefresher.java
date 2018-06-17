@@ -26,7 +26,7 @@ import static android.R.attr.max;
 
 public class BackgroundRefresher extends JobService {
     private static final int jobId=12,delay=2;
-    private static final String TAG     = "BackgroundRefresher";
+    private static final String TAG     = "BackgroundRefresher",mcId="default";
     LocationProvider locationProvider;
     DataProvider dataProvider;
     AudioManager audioManager;
@@ -71,18 +71,18 @@ public class BackgroundRefresher extends JobService {
         Log.e(TAG,"NowHasBeenScheduled");
     }
     public void sendAlertPushNotification(String city, int threshold) {
-        //int OriginRingerMode=changeToCustomVolume();
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("default",
+            mNotificationManager.deleteNotificationChannel(mcId);
+            NotificationChannel channel = new NotificationChannel(mcId,
                     "空氣汙染警報",
                     NotificationManager.IMPORTANCE_DEFAULT);
             channel.setDescription("YOUR_NOTIFICATION_CHANNEL_DISCRIPTION");
-            channel.setVibrationPattern(new long[]{0});
+            channel.setVibrationPattern(new long[]{1000,0,1000,1000,0});
             mNotificationManager.createNotificationChannel(channel);
         }
-        NotificationCompat.Builder b = new NotificationCompat.Builder(BackgroundRefresher.this,"default");
+        NotificationCompat.Builder b = new NotificationCompat.Builder(BackgroundRefresher.this,mcId);
         Random ran = new Random();
         Integer pushIdentifier = (int) System.currentTimeMillis() + (5 + ran.nextInt(max - 5 + 1));
 
@@ -101,15 +101,5 @@ public class BackgroundRefresher extends JobService {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, b.build());
-        //changeToOriginVolume(OriginRingerMode);
-    }
-    public int changeToCustomVolume(){
-        int ringerMode=audioManager.getRingerMode();
-        audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-        return ringerMode;
-    }
-    public void changeToOriginVolume(int ringerMode){
-        Log.e(TAG,String.valueOf(ringerMode));
-        audioManager.setRingerMode(2);
     }
 }

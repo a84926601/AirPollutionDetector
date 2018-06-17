@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
@@ -23,6 +24,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hookedonplay.decoviewlib.DecoView;
+import com.hookedonplay.decoviewlib.charts.SeriesItem;
+import com.hookedonplay.decoviewlib.events.DecoEvent;
+
 import java.util.List;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
@@ -31,8 +36,11 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,View.OnClickListener {
     private static final String TAG= "AirPollutionDetector";
     private static final int REQUEST_CODE_PERMISSIONS_LOCATION = 1,jobId=12;
+    int series1Index;
+    SeriesItem seriesItem1;
     LocationProvider locationProvider;
     DataProvider dataProvider;
+    DecoView arcView;
     TextView locationview,cityview,timeview,AqiText,status,Pm25Text,O3Text;
     Button setting;
     //授權處理
@@ -64,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
+        arcView = findViewById(R.id.dynamicArcView);
         locationProvider = new LocationProvider(this);
         dataProvider = new DataProvider(locationProvider);
         findViewById(R.id.setting).setOnClickListener(this);
@@ -75,6 +84,49 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         Pm25Text= findViewById(R.id.Pm25Text);
         O3Text = findViewById(R.id.O3Text);
         location_requiresPermissions();
+        drawBaseCircle();
+    }
+    void drawData(int endPosition,String ColorString){
+        Log.e(TAG,String.valueOf(endPosition));
+        endPosition=numToPercent(endPosition);
+        arcView.addEvent(new DecoEvent.Builder(endPosition)
+                .setIndex(series1Index)
+                .setDelay(500)
+                .setDuration(2000)
+                .setColor(Color.parseColor(ColorString))
+                .build());
+    }
+    private void drawBaseCircle(){
+        // Create background track
+        arcView.addSeries(new SeriesItem.Builder(Color.argb(80, 0, 0, 0))
+                .setRange(0, 100, 100)
+                .setInitialVisibility(false)
+                .setLineWidth(50f)
+                .build());
+
+        //Create data series track
+        seriesItem1 = new SeriesItem.Builder(Color.argb(255, 0, 232, 0))
+                .setRange(0, 100, 0)
+                .setLineWidth(50f)
+                .build();
+
+        seriesItem1.addArcSeriesItemListener(new SeriesItem.SeriesItemListener() {
+            @Override
+            public void onSeriesItemAnimationProgress(float percentComplete, float currentPosition) {
+                AqiText.setText(String.valueOf(percentToNum(currentPosition)));
+            }
+
+            @Override
+            public void onSeriesItemDisplayProgress(float percentComplete) {
+
+            }
+        });
+        series1Index = arcView.addSeries(seriesItem1);
+
+        arcView.addEvent(new DecoEvent.Builder(DecoEvent.EventType.EVENT_SHOW, true)
+                .setDelay(200)
+                .setDuration(500)
+                .build());
     }
     @Override
     public void onClick(View v) {
@@ -84,6 +136,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 startActivity(intent1);
                 break;
         }
+    }
+    private int percentToNum(float percentage){
+        double num=(0.000627*Math.pow(percentage,3)-0.17*Math.pow(percentage,2)+15.73*percentage);
+        return num<dataProvider.AQI?(int)num:dataProvider.AQI;
+    }
+    private int numToPercent(int num){
+        return (int)(1.61484*Math.pow(10,-6)*Math.pow(num,3)-0.000675618*Math.pow(num,2)+0.134099*num);
     }
     private void setupBackgroundService() {
         Handler handler=new Handler();
@@ -117,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @AfterPermissionGranted(REQUEST_CODE_PERMISSIONS_LOCATION)
     private void location_requiresPermissions() {
         String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION};
-        checkRingerPermission();
         if (EasyPermissions.hasPermissions(this, perms)) {
             dataProvider.getNearestStation(this,null);
             setupBackgroundService();
@@ -132,24 +190,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         locationview.setText(locationProvider.AdminArea);
         cityview.setText(locationProvider.Locality);
         timeview.setText(dataProvider.PublishTime);
-        AqiText.setText(String.valueOf(dataProvider.AQI));
+        //AqiText.setText(String.valueOf(dataProvider.AQI));
         status.setText(String.valueOf(dataProvider.Status));
         Pm25Text.setText(String.valueOf(dataProvider.PM25));
         O3Text.setText(String.valueOf(dataProvider.O3));
-    }
-    public void checkRingerPermission(){
-        NotificationManager notificationManager =
-                (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                && !notificationManager.isNotificationPolicyAccessGranted()) {
-            Toast.makeText(this,"請授予存取勿打擾權限給"+getString(R.string.app_name)+"以改變通知音量與震動",Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(
-                    android.provider.Settings
-                            .ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
-
-            startActivity(intent);
-        }
-
     }
 }

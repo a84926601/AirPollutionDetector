@@ -88,6 +88,15 @@ public class DataProvider {
                         if(AQI!=0){
                             if(mainActivity!=null) {
                                 Log.e("Data", "Call ShowAQ");
+                                String ColorString="";
+                                if(AQI<51)ColorString=mainActivity.getString(R.string.AQI_excellent_color);
+                                else if(AQI<101)ColorString=mainActivity.getString(R.string.AQI_good_color);
+                                else if(AQI<151)ColorString=mainActivity.getString(R.string.AQI_lightly_polluted_color);
+                                else if(AQI<201)ColorString=mainActivity.getString(R.string.AQI_moderately_polluted_color);
+                                else if(AQI<301)ColorString=mainActivity.getString(R.string.AQI_heavily_polluted_color);
+                                else ColorString=mainActivity.getString(R.string.AQI_severely_polluted_color);
+
+                                mainActivity.drawData(AQI,ColorString);
                                 mainActivity.showAQ();
                             }
                             else if(backgroundRefresher!=null) {
