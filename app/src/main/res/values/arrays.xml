@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="pref_upload_quality_entries">
-        <item>360p</item>
-        <item>480p</item>
-        <item>720p</item>
-        <item>1080p</item>
-        <item>Original</item>
+
+    <string-array name="pref_notify_limit_entries">
+        <item>良好(0~50)</item>
+        <item>普通(51~100)</item>
+        <item>不良(101~199)</item>
+        <item>非常不良(200~299)</item>
+        <item>有害(300~500)</item>
     </string-array>
-    <string-array name="pref_upload_quality_values">
+    <string-array name="pref_notify_limit_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>

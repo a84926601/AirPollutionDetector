@@ -1,23 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <PreferenceCategory android:title="@string/pref_header_general">
-        <ListPreference
-            android:defaultValue="3"
-            android:dialogTitle="上傳品質"
-            android:entries="@array/pref_upload_quality_entries"
-            android:entryValues="@array/pref_upload_quality_values"
-            android:key="key_upload_quality"
-            android:summary="Specify video quality for uploads"
-            android:title="Upload Quality" />
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/pref_header_air_pollution_notify">
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="@string/key_enable_notify"
-            android:summary="@string/summary_enable_notify"
-            android:title="@string/title_enable_notify" />
+    <PreferenceCategory android:title="@string/pref_header_notify">
         <SwitchPreference
             android:defaultValue="true"
             android:key="@string/key_enable_vibrate"
@@ -28,5 +11,34 @@
             android:key="@string/key_enable_sound"
             android:summary="@string/summary_enable_sound"
             android:title="@string/title_enable_sound" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_header_air_pollution_notify">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/key_enable_notify"
+            android:summary="@string/summary_enable_notify"
+            android:title="@string/title_enable_notify" />
+        <ListPreference
+            android:defaultValue="2"
+            android:dialogTitle="@string/title_notify_limit"
+            android:entries="@array/pref_notify_limit_entries"
+            android:entryValues="@array/pref_notify_limit_values"
+            android:key="key_notify_limit"
+            android:summary="@string/summary_notify_limit"
+            android:title="@string/title_notify_limit" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_alarm_notify">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/key_enable_alarm"
+            android:summary="@string/summary_enable_alarm"
+            android:title="@string/title_enable_alarm" />
+        <com.yuntech.eb211.airpollutiondetector.TimePreference
+            android:key="key_time_alarm"
+            android:defaultValue="18:00"
+            android:summary="@string/summary_time_alarm"
+            android:dialogTitle="@string/summary_time_alarm"
+            android:title="@string/title_time_alarm"/>
     </PreferenceCategory>
 </PreferenceScreen>

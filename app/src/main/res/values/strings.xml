@@ -22,75 +22,41 @@
     <!-- Example General settings -->
     <string name="pref_header_general">一般</string>
 
-
-
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
-
-    <!--空氣汙染推播-->
-    <string name="pref_header_air_pollution_notify">空氣汙染推播</string>
-
-    <string name="key_enable_notify">key_enable_notify</string>
-    <string name="summary_enable_notify">當空氣品質不良時可以獲得空氣汙染通知</string>
-    <string name="title_enable_notify">開啟推播</string>
+    <!--通知設定-->
+    <string name="pref_header_notify">通知</string>
 
     <string name="key_enable_vibrate">key_enable_vibrate</string>
     <string name="summary_enable_vibrate">收到通知時震動</string>
-    <string name="title_enable_vibrate">震動</string>
+    <string name="title_enable_vibrate">開啟震動</string>
 
     <string name="key_enable_sound">key_enable_sound</string>
     <string name="summary_enable_sound">收到通知時發出音效</string>
     <string name="title_enable_sound">通知音效</string>
 
+    <!--空氣汙染推播-->
+    <string name="pref_header_air_pollution_notify">空氣汙染警報</string>
+
+    <string name="key_enable_notify">key_enable_notify</string>
+    <string name="summary_enable_notify">當空氣品質達到設定值時可以獲得空氣汙染通知</string>
+    <string name="title_enable_notify">開啟推播</string>
+
+    <string name="key_notify_limit">key_notify_limit</string>
+    <string name="summary_notify_limit">當空氣品質達到設定值時通知</string>
+    <string name="title_notify_limit">警報最低值</string>
+
+    <!--定時推播-->
+    <string name="pref_header_alarm_notify">定時推播</string>
+
+    <string name="key_enable_alarm">key_enable_alarm</string>
+    <string name="summary_enable_alarm">當每天到達指定時間可以獲得空氣狀態通知</string>
+    <string name="title_enable_alarm">開啟定時推播</string>
+
+    <string name="key_time_alarm">key_time_alarm</string>
+    <string name="summary_time_alarm">設定想獲得通知的時間</string>
+    <string name="title_time_alarm">設定推播時間</string>
+
     <string name="pref_title_display_name">Display name</string>
     <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
-
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
-
-    <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array>
-
-    <string-array name="list_preference_entries">
-        <item>Entry 1</item>
-        <item>Entry 2</item>
-        <item>Entry 3</item>
-    </string-array>
-
-    <string-array name="list_preference_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
 
     <string-array name="multi_select_list_preference_default_value" />
 
