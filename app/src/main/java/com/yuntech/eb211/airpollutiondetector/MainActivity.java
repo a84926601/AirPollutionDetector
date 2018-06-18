@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -36,6 +37,9 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,View.OnClickListener {
     private static final String TAG= "AirPollutionDetector";
+    private SharedPreferences settings;
+    private static final String data="DATA",SPcounty = "COUNTY",SPcity="CITY",SPtime="TIME",SPaqi="AQI",
+            SPstatus="STATUS",SPpm25="PM25",SPo3="O3",SPhealthMeter="HEALTHMETER",SPsuggestion="SUGGESTION";
     private static final int REQUEST_CODE_PERMISSIONS_LOCATION = 1,jobId=12;
     int series1Index;
     SeriesItem seriesItem1;
@@ -68,6 +72,33 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             Log.d(TAG, "onActivityResult: ");
         }
     }
+    //資料讀取
+    private void readData(){
+        settings = getSharedPreferences(data,0);
+        timeview.setText(settings.getString(SPtime,"2018-06-01 12:00"));
+        AqiText.setText(settings.getString(SPaqi,"0"));
+        status.setText(settings.getString(SPstatus,"良好"));
+        Pm25Text.setText(settings.getString(SPpm25,"0")+" ppm");
+        O3Text.setText(settings.getString(SPo3,"0")+" ppm");
+        healthMeter.setBackgroundResource(settings.getInt(SPhealthMeter,R.drawable.happy));
+        suggestion.setText(settings.getString(SPsuggestion,getString(R.string.AQI_excellent_suggest)));
+        locationview.setText(settings.getString(SPcounty,"雲林縣"));
+        cityview.setText(settings.getString(SPcity,"斗六市"));
+    }
+    void saveData(int img){
+        settings = getSharedPreferences(data,0);
+        settings.edit()
+                .putString(SPtime, timeview.getText().toString())
+                .putString(SPaqi, AqiText.getText().toString())
+                .putString(SPstatus, status.getText().toString())
+                .putString(SPpm25, Pm25Text.getText().toString())
+                .putString(SPo3, O3Text.getText().toString())
+                .putInt(SPhealthMeter, img)
+                .putString(SPsuggestion, suggestion.getText().toString())
+                .putString(SPcounty, locationview.getText().toString())
+                .putString(SPcity, cityview.getText().toString())
+                .apply();
+    }
     //開始運行
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         O3Text = findViewById(R.id.O3Text);
         healthMeter=findViewById(R.id.healthMeter);
         suggestion = findViewById(R.id.suggestion);
+        readData();
         location_requiresPermissions();
         drawBaseCircle();
     }
@@ -190,15 +222,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     perms);
         }
     }
-    public void showAQ(int img,String suggest){
-        locationview.setText(locationProvider.AdminArea);
-        cityview.setText(locationProvider.Locality);
+    void showAQ(int img,String suggest){
         timeview.setText(dataProvider.PublishTime);
-        //AqiText.setText(String.valueOf(dataProvider.AQI));
         status.setText(String.valueOf(dataProvider.Status));
-        Pm25Text.setText(String.valueOf(dataProvider.PM25));
-        O3Text.setText(String.valueOf(dataProvider.O3));
+        Pm25Text.setText(String.valueOf(dataProvider.PM25)+" ppm");
+        O3Text.setText(String.valueOf(dataProvider.O3)+" ppm");
         healthMeter.setBackgroundResource(img);
         suggestion.setText(suggest);
+        saveData(img);
+    }
+    void showLocation(){
+        locationview.setText(locationProvider.AdminArea);
+        cityview.setText(locationProvider.Locality);
     }
 }

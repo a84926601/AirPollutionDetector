@@ -36,6 +36,7 @@ public class DataProvider {
         if(location==null){
             location=CurrentLocationProvider.getLocation();
         }
+        if(mainActivity!=null)mainActivity.showLocation();
         AQdata(mainActivity,backgroundRefresher,location);
     }
     private void AQdata(final MainActivity mainActivity,final BackgroundRefresher backgroundRefresher, String location){

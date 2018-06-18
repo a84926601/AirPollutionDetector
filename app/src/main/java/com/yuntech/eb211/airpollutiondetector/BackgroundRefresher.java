@@ -25,7 +25,7 @@ import static android.R.attr.max;
 //使用時要將Service 注册到 AndroidManifest.xml Application 里面
 
 public class BackgroundRefresher extends JobService {
-    private static final int jobId=12,delay=2;
+    private static final int jobId=12,delay=15;
     private static final String TAG     = "BackgroundRefresher",mcId="default";
     LocationProvider locationProvider;
     DataProvider dataProvider;
@@ -37,13 +37,13 @@ public class BackgroundRefresher extends JobService {
         locationProvider=new LocationProvider(BackgroundRefresher.this);
         dataProvider=new DataProvider(locationProvider);
         // Clear notifications fired array
-        /*new Handler().post(new Runnable() {
+        new Handler().post(new Runnable() {
             @Override
             public void run() {
                 dataProvider.getNearestStation(null,BackgroundRefresher.this);
             }
-        });*/
-        sendAlertPushNotification("a",1);
+        });
+        //sendAlertPushNotification("a",1);
         ScheduleNextJob();
         jobFinished(params, false);
         return true;
@@ -79,7 +79,7 @@ public class BackgroundRefresher extends JobService {
                     "空氣汙染警報",
                     NotificationManager.IMPORTANCE_DEFAULT);
             channel.setDescription("YOUR_NOTIFICATION_CHANNEL_DISCRIPTION");
-            channel.setVibrationPattern(new long[]{1000,0,1000,1000,0});
+            //channel.setVibrationPattern(new long[]{1000,0,1000,1000,0});
             mNotificationManager.createNotificationChannel(channel);
         }
         NotificationCompat.Builder b = new NotificationCompat.Builder(BackgroundRefresher.this,mcId);
@@ -91,9 +91,9 @@ public class BackgroundRefresher extends JobService {
 
         b.setAutoCancel(true)
             .setWhen(System.currentTimeMillis())
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_launcher)
             .setContentTitle("空氣汙染警報")
-            .setContentText(city+"空氣品質不良 AQI"+threshold)
+            .setContentText(city+"空氣品質"+dataProvider.Status+" AQI "+threshold)
             //.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
             .setVibrate(new long[]{500})
             .setOnlyAlertOnce(true)

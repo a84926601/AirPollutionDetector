@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AirPollutionDetector</string>
+    <string name="app_name">空行者</string>
     <string name="title_activity_settings">Settings</string>
     <string name="common_ok">授予</string>
 

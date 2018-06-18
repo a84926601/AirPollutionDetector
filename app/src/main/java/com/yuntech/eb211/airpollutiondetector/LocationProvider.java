@@ -131,8 +131,12 @@ public class LocationProvider {
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
             if (addresses != null && addresses.size() > 0) {
                 Address address = addresses.get(0);
+                Log.e(TAG,address.toString());
                 Locality=address.getLocality()!=null?address.getLocality():address.getSubLocality();
                 AdminArea=address.getAdminArea()!=null?address.getAdminArea():address.getSubAdminArea();
+                if(AdminArea.contentEquals("臺灣省"))AdminArea=address.getSubAdminArea();    //省轄市
+                AdminArea=AdminArea.replace("台","臺"); //因轉譯出資料與線上資料不同
+                Log.e(TAG,AdminArea);
                 return AdminArea;
             }
         }catch (IOException e) {
