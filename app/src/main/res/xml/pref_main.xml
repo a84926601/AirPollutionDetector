@@ -35,8 +35,8 @@
             android:summary="@string/summary_enable_alarm"
             android:title="@string/title_enable_alarm" />
         <com.yuntech.eb211.airpollutiondetector.TimePreference
-            android:key="key_time_alarm"
-            android:defaultValue="18:00"
+            android:key="@string/key_time_alarm"
+            android:defaultValue="18:0"
             android:summary="@string/summary_time_alarm"
             android:dialogTitle="@string/summary_time_alarm"
             android:title="@string/title_time_alarm"/>

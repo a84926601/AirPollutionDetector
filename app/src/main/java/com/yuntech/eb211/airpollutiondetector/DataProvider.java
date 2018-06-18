@@ -36,7 +36,6 @@ public class DataProvider {
         if(location==null){
             location=CurrentLocationProvider.getLocation();
         }
-        if(mainActivity!=null)mainActivity.showLocation();
         AQdata(mainActivity,backgroundRefresher,location);
     }
     private void AQdata(final MainActivity mainActivity,final BackgroundRefresher backgroundRefresher, String location){
@@ -71,6 +70,7 @@ public class DataProvider {
                                 NO2=Float.valueOf(jsonStation.getString("NO2"));
                                 PublishTime = jsonStation.getString("PublishTime");
                             }
+                            if(CurrentLocationProvider.Locality==null){CurrentLocationProvider.Locality=SiteName;}
                         }
                         Log.e("Data","Finish Download Data");
                     }
@@ -122,7 +122,7 @@ public class DataProvider {
                                     suggest=mainActivity.getString(R.string.AQI_severely_polluted_suggest);
                                 }
 
-                                mainActivity.drawData(AQI,ColorString);
+                                mainActivity.drawAQIcircle(AQI,ColorString);
                                 mainActivity.showAQ(img,suggest);
                             }
                             else if(backgroundRefresher!=null) {

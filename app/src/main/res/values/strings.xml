@@ -11,7 +11,7 @@
     <string name="AQI_heavily_polluted_color">#ff8f3f97</string>
     <string name="AQI_severely_polluted_color">#ff7e0023</string>
 
-    <string name="AQI_excellent_suggest">空氣品質為良好，污染程度低或無污染。</string>
+    <string name="AQI_excellent_suggest">空氣品質良好，污染程度低或無污染。</string>
     <string name="AQI_good_suggest">空氣品質普通；但對非常少數之極敏感族群產生輕微影響。</string>
     <string name="AQI_lightly_polluted_suggest">空氣污染物可能會對敏感族群的健康造成影響，但是對一般大眾的影響不明顯。</string>
     <string name="AQI_moderately_polluted_suggest">對所有人的健康開始產生影響，對於敏感族群可能產生較嚴重的健康影響。</string>
@@ -27,7 +27,7 @@
 
     <string name="key_enable_vibrate">key_enable_vibrate</string>
     <string name="summary_enable_vibrate">收到通知時震動</string>
-    <string name="title_enable_vibrate">開啟震動</string>
+    <string name="title_enable_vibrate">通知震動</string>
 
     <string name="key_enable_sound">key_enable_sound</string>
     <string name="summary_enable_sound">收到通知時發出音效</string>
@@ -48,7 +48,7 @@
     <string name="pref_header_alarm_notify">定時推播</string>
 
     <string name="key_enable_alarm">key_enable_alarm</string>
-    <string name="summary_enable_alarm">當每天到達指定時間可以獲得空氣狀態通知</string>
+    <string name="summary_enable_alarm">每天指定時間可以獲得空氣狀態通知</string>
     <string name="title_enable_alarm">開啟定時推播</string>
 
     <string name="key_time_alarm">key_time_alarm</string>

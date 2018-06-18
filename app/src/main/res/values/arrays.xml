@@ -4,9 +4,10 @@
     <string-array name="pref_notify_limit_entries">
         <item>良好(0~50)</item>
         <item>普通(51~100)</item>
-        <item>不良(101~199)</item>
-        <item>非常不良(200~299)</item>
-        <item>有害(300~500)</item>
+        <item>敏感族群不健康(101~150)</item>
+        <item>所有族群不健康(151~200)</item>
+        <item>非常不健康(201~300)</item>
+        <item>危害(301~500)</item>
     </string-array>
     <string-array name="pref_notify_limit_values">
         <item>0</item>
@@ -14,5 +15,6 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
+        <item>5</item>
     </string-array>
 </resources>

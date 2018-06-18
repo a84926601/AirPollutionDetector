@@ -12,9 +12,11 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -27,12 +29,14 @@ import static android.R.attr.max;
 public class BackgroundRefresher extends JobService {
     private static final int jobId=12,delay=15;
     private static final String TAG     = "BackgroundRefresher",mcId="default";
+    private SharedPreferences Setting;
     LocationProvider locationProvider;
     DataProvider dataProvider;
     AudioManager audioManager;
 
     @Override
     public boolean onStartJob(JobParameters params) {
+        Setting = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         locationProvider=new LocationProvider(BackgroundRefresher.this);
         dataProvider=new DataProvider(locationProvider);
@@ -43,7 +47,6 @@ public class BackgroundRefresher extends JobService {
                 dataProvider.getNearestStation(null,BackgroundRefresher.this);
             }
         });
-        //sendAlertPushNotification("a",1);
         ScheduleNextJob();
         jobFinished(params, false);
         return true;
@@ -71,35 +74,45 @@ public class BackgroundRefresher extends JobService {
         Log.e(TAG,"NowHasBeenScheduled");
     }
     public void sendAlertPushNotification(String city, int threshold) {
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            mNotificationManager.deleteNotificationChannel(mcId);
-            NotificationChannel channel = new NotificationChannel(mcId,
-                    "空氣汙染警報",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription("YOUR_NOTIFICATION_CHANNEL_DISCRIPTION");
-            //channel.setVibrationPattern(new long[]{1000,0,1000,1000,0});
-            mNotificationManager.createNotificationChannel(channel);
+        int minAlertNum=2;
+        switch (Setting.getString(getString(R.string.key_notify_limit),"2")){
+            case "0" : minAlertNum=0; break;
+            case "1" : minAlertNum=51;  break;
+            case "2" : minAlertNum=101; break;
+            case "3" : minAlertNum=151; break;
+            case "4" : minAlertNum=201; break;
+            case "5" : minAlertNum=301; break;
         }
-        NotificationCompat.Builder b = new NotificationCompat.Builder(BackgroundRefresher.this,mcId);
-        Random ran = new Random();
-        Integer pushIdentifier = (int) System.currentTimeMillis() + (5 + ran.nextInt(max - 5 + 1));
+        if(threshold>minAlertNum){
+            NotificationManager mNotificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                mNotificationManager.deleteNotificationChannel(mcId);
+                NotificationChannel channel = new NotificationChannel(mcId,
+                        "空氣汙染警報",
+                        NotificationManager.IMPORTANCE_DEFAULT);
+                channel.setDescription("YOUR_NOTIFICATION_CHANNEL_DISCRIPTION");
+                //channel.setVibrationPattern(new long[]{1000,0,1000,1000,0});
+                mNotificationManager.createNotificationChannel(channel);
+            }
+            NotificationCompat.Builder b = new NotificationCompat.Builder(BackgroundRefresher.this,mcId);
+            Random ran = new Random();
+            Integer pushIdentifier = (int) System.currentTimeMillis() + (5 + ran.nextInt(max - 5 + 1));
 
-        Intent notificationIntent = new Intent(BackgroundRefresher.this, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(BackgroundRefresher.this, 0, notificationIntent, 0);
+            Intent notificationIntent = new Intent(BackgroundRefresher.this, MainActivity.class);
+            PendingIntent contentIntent = PendingIntent.getActivity(BackgroundRefresher.this, 0, notificationIntent, 0);
 
-        b.setAutoCancel(true)
-            .setWhen(System.currentTimeMillis())
-            .setSmallIcon(R.drawable.ic_launcher)
-            .setContentTitle("空氣汙染警報")
-            .setContentText(city+"空氣品質"+dataProvider.Status+" AQI "+threshold)
-            //.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
-            .setVibrate(new long[]{500})
-            .setOnlyAlertOnce(true)
-            .setContentIntent(contentIntent);
+            b.setAutoCancel(true)
+                    .setWhen(System.currentTimeMillis())
+                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setContentTitle("空氣汙染警報")
+                    .setContentText(city+"空氣品質"+dataProvider.Status+" AQI "+threshold)
+                    //.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
+                    .setOnlyAlertOnce(true)
+                    .setContentIntent(contentIntent);
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0, b.build());
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(0, b.build());
+        }
     }
 }
