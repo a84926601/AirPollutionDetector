@@ -24,7 +24,7 @@ public class DataProvider {
     private OkHttpClient client = new HttpsUtils().getTrustAllClient();
     //Station結構
     int AQI=0;
-    String SiteName,Status,PublishTime;
+    String SiteName,Status,PublishTime,TAG="Data";
     float PM25=0,NO2=0,O3=0;
     //建構子
     DataProvider(LocationProvider locationProvider){
@@ -45,17 +45,34 @@ public class DataProvider {
         service.submit(new Runnable() {
             @Override
             public void run() {
+                JSONArray array=null;
+                String resStr = null;
                 Request request = new Request.Builder()
                         .url(database+"filters=County eq '"+county+"'&token="+token)
                         .build();
                 try {
+                    Log.e(TAG,"submit request");
                     final Response response = client.newCall(request).execute();
-                    final String resStr = response.body().string();
-                    try{
-                        //建立一個JSONObject並帶入JSON格式文字，getString(String key)取出欄位的數值
-                        JSONArray array = new JSONObject(resStr).getJSONObject("result").getJSONArray("records");
-                        float disMin=Float.MAX_VALUE;
-                        for (int i = 0; i < array.length(); i++) {
+                    Log.e(TAG,response.toString());
+                    resStr = response.body().string();
+                } catch (IOException e) {
+                    Log.e(TAG,"TimeOut");
+                    e.printStackTrace();
+                }
+                try{
+                    //建立一個JSONObject並帶入JSON格式文字，getString(String key)取出欄位的數值
+                    array = new JSONObject(resStr).getJSONObject("result").getJSONArray("records");
+                    //if(CurrentLocationProvider.Locality==null){CurrentLocationProvider.Locality=SiteName;}
+                    Log.e(TAG,"Finish Download Data");
+                }
+                catch(JSONException e) {
+                    e.printStackTrace();
+                    Log.e(TAG,"Download Failed");
+                }
+                float disMin=Float.MAX_VALUE;
+                try {
+                    if(array!=null){
+                        for(int i = 0; i < array.length(); i++) {
                             JSONObject jsonStation = array.getJSONObject(i);
                             float Latitude = Float.valueOf(jsonStation.getString("Latitude"));
                             float Longitude = Float.valueOf(jsonStation.getString("Longitude"));
@@ -63,25 +80,23 @@ public class DataProvider {
                             if(disMin>CurrentDistence){
                                 disMin=CurrentDistence;
                                 SiteName = jsonStation.getString("SiteName");
-                                AQI=Integer.valueOf(jsonStation.getString("AQI"));
+                                String sAQI=jsonStation.getString("AQI"),sPM25=jsonStation.getString("PM2.5"),
+                                        sO3=jsonStation.getString("O3"),sNO2=jsonStation.getString("NO2");
+                                //數值如不存在
+
+                                AQI=isNumber(sAQI)?Integer.valueOf(sAQI):0;
                                 Status = jsonStation.getString("Status");
-                                PM25=Float.valueOf(jsonStation.getString("PM2.5"));
-                                O3=Float.valueOf(jsonStation.getString("O3"));
-                                NO2=Float.valueOf(jsonStation.getString("NO2"));
+                                PM25=isNumber(sPM25)?Float.valueOf(sPM25):0;
+                                O3=isNumber(sO3)?Float.valueOf(sO3):0;
+                                NO2=isNumber(sNO2)?Float.valueOf(sNO2):0;
                                 PublishTime = jsonStation.getString("PublishTime");
                             }
-                            if(CurrentLocationProvider.Locality==null){CurrentLocationProvider.Locality=SiteName;}
                         }
-                        Log.e("Data","Finish Download Data");
                     }
-                    catch(JSONException e) {
-                        e.printStackTrace();
-                        Log.e("Data","DataError");
-                    }
-
-                } catch (IOException e) {
-                    Log.e("Data","TimeOut");
+                }
+                catch (JSONException e){
                     e.printStackTrace();
+                    Log.e(TAG,"DataError");
                 }
                 handler.post(new Runnable() {
                     @Override
@@ -127,13 +142,19 @@ public class DataProvider {
                             }
                             else if(backgroundRefresher!=null) {
                                 backgroundRefresher.sendAlertPushNotification(CurrentLocationProvider.AdminArea,AQI);
-                                Log.e("Data", "Call sendAlertPushNotification");
+                                Log.e(TAG, "Call sendAlertPushNotification");
                             }
                         }
-                        else Log.e("Data","AQI=0");
+                        else Log.e(TAG,"AQI=0");
                     }
                 });
             }
         });
+    }
+    static public boolean isNumber(String str){
+        if(str.matches("\\d+(?:\\.\\d+)?"))
+            return true;
+        else
+            return false;
     }
 }

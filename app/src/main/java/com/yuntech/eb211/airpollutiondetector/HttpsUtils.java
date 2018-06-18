@@ -3,6 +3,7 @@ package com.yuntech.eb211.airpollutiondetector;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -56,7 +57,9 @@ public class HttpsUtils {
     }
 
     public OkHttpClient getTrustAllClient() {
-        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder()
+                .retryOnConnectionFailure(true)
+                .connectTimeout(20, TimeUnit.SECONDS);
         mBuilder.sslSocketFactory(createSSLSocketFactory(), mMyTrustManager)
                 .hostnameVerifier(new TrustAllHostnameVerifier());
         return mBuilder.build();
