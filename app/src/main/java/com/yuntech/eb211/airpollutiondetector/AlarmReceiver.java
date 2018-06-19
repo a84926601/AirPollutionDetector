@@ -1,7 +1,5 @@
 package com.yuntech.eb211.airpollutiondetector;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
@@ -13,8 +11,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
-
-import java.util.Calendar;
 
 public class AlarmReceiver extends BroadcastReceiver {
     JobScheduler mJobScheduler;

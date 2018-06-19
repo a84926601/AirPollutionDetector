@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
+    useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.yuntech.eb211.airpollutiondetector"
         minSdkVersion 21
@@ -22,7 +23,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.github.bmarrdev:android-DecoView-charting:v1.2'
     implementation 'pub.devrel:easypermissions:1.0.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.android.support:support-v4:27.1.1'

@@ -1,27 +1,36 @@
 package com.yuntech.eb211.airpollutiondetector;
 
-import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 public class DataProvider {
     //網路取得Data
+    private HttpResponse response = null;
     private LocationProvider CurrentLocationProvider;
-    private static final String database="https://opendata.epa.gov.tw/webapi/api/rest/datastore/355000000I-000259/?format=json&"
+    private static final String database="http://opendata.epa.gov.tw/webapi/api/rest/datastore/355000000I-000259/?format=json&"
             ,token="coTaajMn6EqYsoCEMtXkFQ";
-    private OkHttpClient client = new HttpsUtils().getTrustAllClient();
     //Station結構
     int AQI=0;
     String SiteName,Status,PublishTime,TAG="Data";
@@ -39,26 +48,28 @@ public class DataProvider {
         AQdata(mainActivity,backgroundRefresher,location);
     }
     private void AQdata(final MainActivity mainActivity,final BackgroundRefresher backgroundRefresher, String location){
-        //Log.e(TAG,client.());
         final Handler handler=new Handler();
         final ExecutorService service = Executors.newSingleThreadExecutor();
         final String county=location;
         service.submit(new Runnable() {
             @Override
             public void run() {
-                JSONArray array=null;
+                JSONArray array = null;
                 String resStr = null;
-                Request request = new Request.Builder()
-                        .url(database+"filters=County eq '"+county+"'&token="+token)
-                        .build();
                 try {
-                    Log.e(TAG,"submit request");
-                    Log.e(TAG,request.toString());
-                    final Response response = client.newCall(request).execute();
-                    Log.e(TAG,response.toString());
-                    resStr = response.body().string();
+                    URL url = new URL(database+"filters=County eq '"+county+"'&token="+token);
+                    HttpClient client = new DefaultHttpClient();
+                    HttpGet request = new HttpGet();
+                    request.setURI(new URI(url.getProtocol(),url.getHost(),url.getPath(),url.getQuery(),null));
+                    response = client.execute(request);
+                    resStr=convertStreamToString(response.getEntity().getContent());
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                } catch (ClientProtocolException e) {
+                    Log.e(TAG,"ClientProtocolException");
+                    e.printStackTrace();
                 } catch (IOException e) {
-                    Log.e(TAG,"TimeOut");
+                    Log.e(TAG," Download Failed");
                     e.printStackTrace();
                 }
                 try{
@@ -85,7 +96,6 @@ public class DataProvider {
                                 String sAQI=jsonStation.getString("AQI"),sPM25=jsonStation.getString("PM2.5"),
                                         sO3=jsonStation.getString("O3"),sNO2=jsonStation.getString("NO2");
                                 //數值如不存在
-
                                 AQI=isNumber(sAQI)?Integer.valueOf(sAQI):0;
                                 Status = jsonStation.getString("Status");
                                 PM25=isNumber(sPM25)?Float.valueOf(sPM25):0;
@@ -158,5 +168,24 @@ public class DataProvider {
             return true;
         else
             return false;
+    }
+    public static String convertStreamToString(InputStream inputStream) throws IOException {
+        if (inputStream != null) {
+            Writer writer = new StringWriter();
+
+            char[] buffer = new char[1024];
+            try {
+                Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"),1024);
+                int n;
+                while ((n = reader.read(buffer)) != -1) {
+                    writer.write(buffer, 0, n);
+                }
+            } finally {
+                inputStream.close();
+            }
+            return writer.toString();
+        } else {
+            return "";
+        }
     }
 }
