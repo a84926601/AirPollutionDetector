@@ -27,6 +27,11 @@
             android:name=".BackgroundRefresher"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+        <receiver android:name=".AlarmReceiver">
+            <intent-filter>
+            <action android:name="alarm_push" />
+        </intent-filter>
+    </receiver>
     </application>
 
 </manifest>

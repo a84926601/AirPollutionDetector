@@ -1,6 +1,8 @@
 package com.yuntech.eb211.airpollutiondetector;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -15,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ import com.hookedonplay.decoviewlib.DecoView;
 import com.hookedonplay.decoviewlib.charts.SeriesItem;
 import com.hookedonplay.decoviewlib.events.DecoEvent;
 
+import java.util.Calendar;
 import java.util.List;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
@@ -139,6 +141,30 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }else{
             mJobScheduler.cancelAll();
             Log.e(TAG,"Service Stop");
+        }
+        setAlarm(Setting,this);
+    }
+    public static void setAlarm(SharedPreferences Setting,Context context){
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.putExtra("msg", "alarm_push");
+        PendingIntent pi = PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if(Setting.getBoolean(context.getString(R.string.key_enable_alarm),false)){
+            Calendar cal = Calendar.getInstance();
+            String time=Setting.getString(context.getString(R.string.key_time_alarm),null);
+            Log.e(TAG,time);
+            if(time!=null){
+                cal.set(Calendar.HOUR_OF_DAY, TimePreference.getHour(time));
+                cal.set(Calendar.MINUTE, TimePreference.getMinute(time));
+                cal.set(Calendar.SECOND, 0);
+                if(cal.getTimeInMillis()<System.currentTimeMillis()){
+                    // 設定明天開始執行
+                    cal.add(Calendar.DATE, 1);
+                }
+                am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);
+            }
+        }else{
+            am.cancel(pi);
         }
     }
     private void setupBackgroundService() {

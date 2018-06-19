@@ -59,7 +59,7 @@ public class HttpsUtils {
     public OkHttpClient getTrustAllClient() {
         OkHttpClient.Builder mBuilder = new OkHttpClient.Builder()
                 .retryOnConnectionFailure(true)
-                .connectTimeout(20, TimeUnit.SECONDS);
+                .connectTimeout(180, TimeUnit.SECONDS);
         mBuilder.sslSocketFactory(createSSLSocketFactory(), mMyTrustManager)
                 .hostnameVerifier(new TrustAllHostnameVerifier());
         return mBuilder.build();

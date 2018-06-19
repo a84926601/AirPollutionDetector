@@ -140,7 +140,6 @@ public class LocationProvider {
                 return AdminArea;
             }
         }catch (IOException e) {
-            // TODO Auto-generated catch block
             Log.e(TAG,"位置解析錯誤");
             e.printStackTrace();
         }

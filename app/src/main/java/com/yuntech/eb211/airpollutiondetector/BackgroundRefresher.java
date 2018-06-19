@@ -29,17 +29,16 @@ import static android.R.attr.max;
 //使用時要將Service 注册到 AndroidManifest.xml Application 里面
 
 public class BackgroundRefresher extends JobService {
+    private boolean AlarmReceiver=false;
     private static final int jobId=12,delay=15;
     private static final String TAG = "BackgroundRefresher",CHANNEL_DEFAULT="default",CHANNEL_SILENT="silent",CHANNEL_VIBRATE="vibrate",CHANNEL_RING="ring";
     private SharedPreferences Setting;
     LocationProvider locationProvider;
     DataProvider dataProvider;
-    AudioManager audioManager;
 
     @Override
     public boolean onStartJob(JobParameters params) {
         Setting = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         locationProvider=new LocationProvider(BackgroundRefresher.this);
         dataProvider=new DataProvider(locationProvider);
         // Clear notifications fired array
@@ -49,7 +48,8 @@ public class BackgroundRefresher extends JobService {
                 dataProvider.getNearestStation(null,BackgroundRefresher.this);
             }
         });
-        ScheduleNextJob();
+        if(params.getJobId()==jobId) ScheduleNextJob();
+        else AlarmReceiver=true;
         jobFinished(params, false);
         return true;
     }
@@ -88,7 +88,7 @@ public class BackgroundRefresher extends JobService {
             case "4" : minAlertNum=201; break;
             case "5" : minAlertNum=301; break;
         }
-        if(threshold>minAlertNum){
+        if(threshold>minAlertNum||AlarmReceiver){
             NotificationManager mNotificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
