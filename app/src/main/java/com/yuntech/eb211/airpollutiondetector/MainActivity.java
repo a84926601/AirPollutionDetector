@@ -75,10 +75,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private void readData(){
         lastUpdateData = getSharedPreferences(data,0);
         timeview.setText(lastUpdateData.getString(SPtime,"2018-06-01 12:00"));
-        AqiText.setText(lastUpdateData.getString(SPaqi,"0"));
         status.setText(lastUpdateData.getString(SPstatus,"良好"));
-        Pm25Text.setText(lastUpdateData.getString(SPpm25,"0"));
-        O3Text.setText(lastUpdateData.getString(SPo3,"0"));
+        dataProvider.AQI=Integer.valueOf(lastUpdateData.getString(SPaqi,"0"));
+        Pm25Text.setText(lastUpdateData.getString(SPpm25,"0")+" ppm");
+        O3Text.setText(lastUpdateData.getString(SPo3,"0")+" ppm");
         healthMeter.setBackgroundResource(lastUpdateData.getInt(SPhealthMeter,R.drawable.happy));
         suggestion.setText(lastUpdateData.getString(SPsuggestion,getString(R.string.AQI_excellent_suggest)));
         locationview.setText(lastUpdateData.getString(SPcounty,"雲林縣"));
@@ -87,15 +87,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     void saveData(int img){
         lastUpdateData = getSharedPreferences(data,0);
         lastUpdateData.edit()
-                .putString(SPtime, timeview.getText().toString())
-                .putString(SPaqi, AqiText.getText().toString())
-                .putString(SPstatus, status.getText().toString())
-                .putString(SPpm25, Pm25Text.getText().toString())
-                .putString(SPo3, O3Text.getText().toString())
+                .putString(SPtime, dataProvider.PublishTime)
+                .putString(SPaqi, String.valueOf(dataProvider.AQI))
+                .putString(SPstatus, dataProvider.Status)
+                .putString(SPpm25, String.valueOf(dataProvider.PM25))
+                .putString(SPo3, String.valueOf(dataProvider.O3))
                 .putInt(SPhealthMeter, img)
                 .putString(SPsuggestion, suggestion.getText().toString())
-                .putString(SPcounty, locationview.getText().toString())
-                .putString(SPcity, cityview.getText().toString())
+                .putString(SPcounty, locationProvider.AdminArea)
+                .putString(SPcity, locationProvider.Locality)
                 .apply();
     }
     //開始運行
@@ -224,22 +224,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         return (int)(1.61484*Math.pow(10,-6)*Math.pow(num,3)-0.000675618*Math.pow(num,2)+0.134099*num);
     }
     void drawAQIcircle(int endPosition,String ColorString){
-        seriesItem1.addArcSeriesItemListener(new SeriesItem.SeriesItemListener() {
-            @Override
-            public void onSeriesItemAnimationProgress(float percentComplete, float currentPosition) {
-                AqiText.setText(String.valueOf(percentToNum(currentPosition)));
-            }
-
-            @Override
-            public void onSeriesItemDisplayProgress(float percentComplete) {
-
-            }
-        });
         Log.e(TAG,String.valueOf(endPosition));
         endPosition=numToPercent(endPosition);
         arcView.addEvent(new DecoEvent.Builder(endPosition)
                 .setIndex(series1Index)
-                .setDelay(500)
+                .setDelay(1500)
                 .setDuration(2000)
                 .setColor(Color.parseColor(ColorString))
                 .build());
@@ -251,17 +240,33 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .setInitialVisibility(false)
                 .setLineWidth(50f)
                 .build());
-
         //Create data series track
         seriesItem1 = new SeriesItem.Builder(Color.argb(255, 0, 232, 0))
                 .setRange(0, 100, 0)
                 .setLineWidth(50f)
                 .build();
         series1Index = arcView.addSeries(seriesItem1);
+        seriesItem1.addArcSeriesItemListener(new SeriesItem.SeriesItemListener() {
+            @Override
+            public void onSeriesItemAnimationProgress(float percentComplete, float currentPosition) {
+                AqiText.setText(String.valueOf(percentToNum(currentPosition)));
+            }
 
+            @Override
+            public void onSeriesItemDisplayProgress(float percentComplete) {
+
+            }
+        });
         arcView.addEvent(new DecoEvent.Builder(DecoEvent.EventType.EVENT_SHOW, true)
-                .setDelay(200)
                 .setDuration(500)
+                .build());
+        int LastAQI=Integer.valueOf(lastUpdateData.getString(SPaqi,"0"));
+        int endPosition=numToPercent(LastAQI);
+        arcView.addEvent(new DecoEvent.Builder(endPosition)
+                .setIndex(series1Index)
+                .setDelay(500)
+                .setDuration(1000)
+                .setColor(Color.parseColor(getString(R.string.AQI_excellent_color)))
                 .build());
     }
     void showAQ(int img,String suggest){

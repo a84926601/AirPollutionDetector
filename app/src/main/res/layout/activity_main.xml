@@ -131,7 +131,7 @@
         android:layout_below="@+id/setting"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
-        android:text="100"
+        android:text="0"
         android:textSize="36sp"
         app:layout_constraintBottom_toTopOf="@+id/status"
         app:layout_constraintStart_toEndOf="@+id/textView2" />

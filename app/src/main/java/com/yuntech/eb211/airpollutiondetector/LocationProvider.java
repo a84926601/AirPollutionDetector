@@ -54,6 +54,7 @@ public class LocationProvider {
             new LocationListener(LocationManager.GPS_PROVIDER),
             new LocationListener(LocationManager.NETWORK_PROVIDER)
     };
+    //TODO 當使用者GPS永久關閉時
     private void initializeLocationManager() {
         Log.e(TAG, "initializeLocationManager");
         if (mLocationManager == null) {
@@ -77,6 +78,25 @@ public class LocationProvider {
         float bestAccuracy = Float.MAX_VALUE;
         long bestTime = Long.MIN_VALUE;
         List<String> matchingProviders = mLocationManager.getAllProviders();
+        Log.e(TAG,matchingProviders.toString());
+
+        try {
+            mLocationManager.requestSingleUpdate(
+                    LocationManager.GPS_PROVIDER, mLocationListeners[0], null);
+        } catch (java.lang.SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+        }
+        try {
+            mLocationManager.requestSingleUpdate(
+                    LocationManager.NETWORK_PROVIDER, mLocationListeners[1], null);
+        } catch (java.lang.SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+        }
+
         for (String provider: matchingProviders) {
             Location location = mLocationManager.getLastKnownLocation(provider);
             if (location != null) {
@@ -95,30 +115,22 @@ public class LocationProvider {
             }
         }
         mLastLocation=bestResult;
-        try {
-            mLocationManager.requestSingleUpdate(
-                    LocationManager.GPS_PROVIDER, mLocationListeners[0], null);
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
-        }
-        try {
-            mLocationManager.requestSingleUpdate(
-                    LocationManager.NETWORK_PROVIDER, mLocationListeners[1], null);
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
-        }
         String Address=null;
-        if(mLastLocation.getTime()!=0){
-            try{
-                Address=getAddress(mLastLocation);
-            }catch (IOException e){
-                Log.e(TAG,"未初始化Location");
+        if(mLastLocation!=null){
+            if(mLastLocation.getTime()!=0){
+                try{
+                    Address=getAddress(mLastLocation);
+                }catch (IOException e){
+                    Log.e(TAG,"未初始化Location");
+                }
             }
         }
+        /*try {
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }*/
         return Address;
     }
 

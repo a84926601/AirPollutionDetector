@@ -39,6 +39,7 @@ public class DataProvider {
         AQdata(mainActivity,backgroundRefresher,location);
     }
     private void AQdata(final MainActivity mainActivity,final BackgroundRefresher backgroundRefresher, String location){
+        //Log.e(TAG,client.());
         final Handler handler=new Handler();
         final ExecutorService service = Executors.newSingleThreadExecutor();
         final String county=location;
@@ -52,6 +53,7 @@ public class DataProvider {
                         .build();
                 try {
                     Log.e(TAG,"submit request");
+                    Log.e(TAG,request.toString());
                     final Response response = client.newCall(request).execute();
                     Log.e(TAG,response.toString());
                     resStr = response.body().string();
