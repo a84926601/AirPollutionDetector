@@ -135,9 +135,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
     private void ApplySetting(){
         if(Setting.getBoolean(getString(R.string.key_enable_notify),true)){
-            if(!JobExist()){
-                setupBackgroundService();
-            }
+            setupBackgroundService();
         }else{
             mJobScheduler.cancelAll();
             Log.e(TAG,"Service Stop");
